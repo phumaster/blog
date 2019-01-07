@@ -1,0 +1,43 @@
+version: '3'
+services:
+  php:
+    image: phumaster/php:latest
+    restart: always
+    volumes:
+      - "./web:/var/www/html"
+    networks:
+      - blog
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 8081:80
+    volumes:
+      - "./nginx/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./web:/var/www/html"
+    networks:
+      - blog
+  mysql:
+    image: mysql:5.7
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: web_db
+    ports:
+      - "3309:3306"
+    networks:
+      - blog
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - 8082:80
+    volumes:
+      - /phpmyadmin
+    networks:
+      - blog
+networks:
+  blog:
